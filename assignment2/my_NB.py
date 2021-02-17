@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from collections import Counter
 
+
 class my_NB:
 
     def __init__(self, alpha=1):
@@ -14,25 +15,49 @@ class my_NB:
     def fit(self, X, y):
         # X: pd.DataFrame, independent variables, str
         # y: list, np.array or pd.Series, dependent variables, int or str
+        # list of classes for this model
+
         self.classes_ = list(set(list(y)))
-        # Calculate P(yj) and P(xi|yj)        
-        # make sure to use self.alpha in the __init__() function as the smoothing factor when calculating P(xi|yj)
-        # write your code below
+        # for calculation of P(y)
+        self.P_y = Counter(y)
+        # self.P[yj][Xi][xi] = P(xi|yi) where Xi is the feature name and xi is the feature value, yj is a specific
+        # class label
+        self.P = {}
+        columnValue = {}
+
+        for yj in self.classes_:
+            self.P[yj] = {}
+
+            for Xi in X:
+                count = Counter(X[Xi].where(y == yj))
+                columnValue[Xi] = list(set(X[Xi]))
+                self.P[yj][Xi] = {}
+
+                for xi in columnValue[Xi]:
+                    self.P[yj][Xi][xi] = (self.alpha + count[xi]) / (self.alpha * (len(columnValue[Xi]) + self.P_y[yj]))
+
         return
+
+    def predict_proba(self, X):
+        # X: pd.DataFrame, independent variables, str
+        # prob is a dict of prediction probabilities belonging to each categories
+        # return probs = pd.DataFrame(list of prob, columns = self.classes_)
+        # write your code below
+        probs = {}
+        for label in self.classes_:
+            p = self.P_y[label]
+            for key in X:
+                p *= X[key].apply(lambda value: self.P[label][key][value] if value in self.P[label][key] else 1)
+            probs[label] = p
+        probs = pd.DataFrame(probs, columns=self.classes_)
+        sums = probs.sum(axis=1)
+        probs = probs.apply(lambda v: v / sums)
+        return probs
 
     def predict(self, X):
         # X: pd.DataFrame, independent variables, str
         # return predictions: list
         # write your code below
+        probs = self.predict_proba(X)
+        predictions = [self.classes_[np.argmax(prob)] for prob in probs.to_numpy()]
         return predictions
-
-    def predict_proba(self, X):
-        # X: pd.DataFrame, independent variables, str
-        # prob is a dict of prediction probabilities belonging to each categories
-        # return probs = pd.DataFrame(list of prob, columns = self.classes_)                
-        # P(yj|x) = P(x|yj)P(yj)/P(x)
-        # write your code below
-        return probs
-
-
-
