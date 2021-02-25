@@ -4,7 +4,7 @@ from collections import Counter
 
 class my_KNN:
 
-    def __init__(self, n_neighbors=5, metric="minkowski", p=2):
+    def __init__(self, n_neighbors=5, metric="euclidean", p=2):
         # metric = {"minkowski", "euclidean", "manhattan", "cosine"}
         # p value only matters when metric = "minkowski"
         # notice that for "cosine", 1 is closest and -1 is furthest
@@ -19,39 +19,58 @@ class my_KNN:
         self.classes_ = list(set(list(y)))
         self.X = X
         self.y = y
+
         return
 
-    def dist(self,x):
+    def minkDistance(self, a, b):
+        result = np.sum(((np.absolute(a - b)) ** self.p)) ** 1 / self.p
+        return result
+
+    def euclDistance(self, a, b):
+        result = np.sqrt(np.sum((a - b) ** 2))
+        return result
+
+    def manhDistance(self, a, b):
+        result = np.sum(np.absolute(a - b))
+        return result
+
+    def cosiDistance(self, a, b):
+        dotProduct = np.dot(a, b)
+        dotX = (np.dot(a, a) ** .5)
+        dotx = (np.dot(b, b) ** .5)
+        result = 1 - dotProduct / (dotX * dotx)
+        return result
+
+    def dist(self, x):
         # Calculate distances of training data to a single input data point (distances from self.X to x)
         # Output np.array([distances to x])
         if self.metric == "minkowski":
-            distances = "write your own code"
-
+            XHeader = self.X[self.X.columns]
+            distTox = [self.minkDistance(x, b) for b in XHeader.to_numpy()]
 
         elif self.metric == "euclidean":
-            distances = "write your own code"
-
+            XHeader = self.X[self.X.columns]
+            distToX = [self.euclDistance(x, b) for b in XHeader.to_numpy()]
 
         elif self.metric == "manhattan":
-            distances = "write your own code"
-
+            XHeader = self.X[self.X.columns]
+            distToX = [self.manhDistance(x, b) for b in XHeader.to_numpy()]
 
         elif self.metric == "cosine":
-            distances = "write your own code"
-
+            XHeader = self.X[self.X.columns]
+            distToX = [self.cosiDistance(x, b) for b in XHeader.to_numpy()]
 
         else:
             raise Exception("Unknown criterion.")
-        return distances
+        return distTox
 
     def k_neighbors(self,x):
         # Return the stats of the labels of k nearest neighbors to a single input data point (np.array)
         # Output: Counter(labels of the self.n_neighbors nearest neighbors) e.g. {"Class A":3, "Class B":2}
         distances = self.dist(x)
-        output = "write your own code"
-
-
-
+        kValues = np.argsort(distances)[:self.n_neighbors]
+        kLabel = [self.y[k] for k in kValues]
+        output = Counter(kLabel)
         return output
 
     def predict(self, X):

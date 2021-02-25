@@ -19,18 +19,22 @@ class my_KNN:
         self.classes_ = list(set(list(y)))
         self.X = X
         self.y = y
+
         return
 
     def minkDistance(self, a, b):
         result = np.sum(((np.absolute(a - b)) ** self.p)) ** 1 / self.p
+
         return result
 
     def euclDistance(self, a, b):
         result = np.sqrt(np.sum((a - b) ** 2))
+
         return result
 
     def manhDistance(self, a, b):
         result = np.sum(np.absolute(a - b))
+
         return result
 
     def cosiDistance(self, a, b):
@@ -38,6 +42,7 @@ class my_KNN:
         dotX = (np.dot(a, a) ** .5)
         dotx = (np.dot(b, b) ** .5)
         result = 1 - dotProduct / (dotX * dotx)
+
         return result
 
     def dist(self, x):
@@ -61,6 +66,7 @@ class my_KNN:
 
         else:
             raise Exception("Unknown criterion.")
+
         return distToX
 
     def k_neighbors(self,x):
@@ -70,6 +76,7 @@ class my_KNN:
         kValues = np.argsort(distToX)[:self.n_neighbors]
         kLabel = [self.y[k] for k in kValues]
         output = Counter(kLabel)
+
         return output
 
     def predict(self, X):
@@ -98,4 +105,5 @@ class my_KNN:
             prob = {k: neighbors[k] / float(self.n_neighbors) for k in self.classes_}
             probs.append(prob)
         probs = pd.DataFrame(probs, columns=self.classes_)
+
         return probs
