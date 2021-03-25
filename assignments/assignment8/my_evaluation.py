@@ -167,4 +167,3 @@ class my_evaluation:
                 raise Exception("Unknown target class.")
 
             return auc_target
-
