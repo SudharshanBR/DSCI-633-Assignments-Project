@@ -138,7 +138,10 @@ class my_evaluation:
                 for label in self.classes_:
                     prec = self.precision(target=label, average=average)
                     rec = self.recall(target=label, average=average)
-                    f1 = 2.0 * prec * rec / (prec + rec)
+                    if prec + rec == 0:
+                        f1 = 0
+                    else:
+                        f1 = 2.0 * prec * rec / (prec + rec)
                     if average == "macro":
                         ratio = 1 / len(self.classes_)
                     elif average == "weighted":
