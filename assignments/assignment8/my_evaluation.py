@@ -1,7 +1,7 @@
 import numpy as np
-import pandas as pd
 from collections import Counter
-
+import pandas as pd
+from pdb import set_trace
 
 class my_evaluation:
     # Binary class or multi-class classification evaluation
@@ -15,10 +15,10 @@ class my_evaluation:
         self.predictions = np.array(predictions)
         self.actuals = np.array(actuals)
         self.pred_proba = pred_proba
-        if type(self.pred_proba) == pd.DataFrame:
+        if type(self.pred_proba)==pd.DataFrame:
             self.classes_ = list(self.pred_proba.keys())
         else:
-            self.classes_ = list(set(list(self.predictions) + list(self.actuals)))
+            self.classes_ = list(set(list(self.predictions)+list(self.actuals)))
         self.confusion_matrix = None
 
     def confusion(self):
@@ -30,10 +30,10 @@ class my_evaluation:
         self.acc = float(Counter(correct)[True])/len(correct)
         self.confusion_matrix = {}
         for label in self.classes_:
-            tp = Counter((self.predictions == label) & correct )[True]
-            fp = Counter((self.predictions == label) & (self.actuals != label))[True]
-            tn = Counter((self.predictions != label) & correct)[True]
-            fn = Counter((self.predictions != label) & (self.actuals == label))[True]
+            tp = Counter(correct & (self.predictions == label))[True]
+            fp = Counter((self.actuals != label) & (self.predictions == label))[True]
+            tn = Counter(correct & (self.predictions != label))[True]
+            fn = Counter((self.actuals == label) & (self.predictions != label))[True]
             self.confusion_matrix[label] = {"TP":tp, "TN": tn, "FP": fp, "FN": fn}
         return
 
@@ -90,9 +90,9 @@ class my_evaluation:
         if self.confusion_matrix==None:
             self.confusion()
         if target in self.classes_:
-            fn = self.confusion_matrix[target]["FN"]
             tp = self.confusion_matrix[target]["TP"]
-            if tp + fn == 0:
+            fn = self.confusion_matrix[target]["FN"]
+            if tp+fn == 0:
                 rec = 0
             else:
                 rec = float(tp) / (tp + fn)
@@ -101,21 +101,21 @@ class my_evaluation:
                 rec = self.accuracy()
             else:
                 rec = 0
-                count = len(self.actuals)
-                for value in self.classes_:
-                    fn = self.confusion_matrix[value]["FN"]
-                    tp = self.confusion_matrix[value]["TP"]
-                    if fn + tp == 0:
+                n = len(self.actuals)
+                for label in self.classes_:
+                    tp = self.confusion_matrix[label]["TP"]
+                    fn = self.confusion_matrix[label]["FN"]
+                    if tp + fn == 0:
                         rec_label = 0
                     else:
-                        rec_label = float(tp) / (fn + tp)
-                    if average == "weighted":
-                        ratio = Counter(self.actuals)[value] / float(count)
-                    elif average == "macro":
+                        rec_label = float(tp) / (tp + fn)
+                    if average == "macro":
                         ratio = 1 / len(self.classes_)
+                    elif average == "weighted":
+                        ratio = Counter(self.actuals)[label] / float(n)
                     else:
                         raise Exception("Unknown type of average.")
-                    rec += ratio * rec_label
+                    rec += rec_label * ratio
         return rec
 
     def f1(self, target=None, average = "macro"):
@@ -150,8 +150,8 @@ class my_evaluation:
         return f1_score
 
     def auc(self, target):
-        # compute AUC of ROC curve for each class
-        # return auc = {self.classes_[i]: auc_i}, dict
+        # compute AUC of ROC curve for the target class
+        # return auc = float
         if type(self.pred_proba)==type(None):
             return None
         else:
@@ -179,3 +179,4 @@ class my_evaluation:
                 raise Exception("Unknown target class.")
 
             return auc_target
+
