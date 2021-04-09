@@ -56,7 +56,6 @@ class my_GA:
         ######################
         # check if size of generation is correct
         assert (len(self.generation) == self.generation_size)
-
         return self.generation
 
     def evaluate(self, decision):
@@ -100,7 +99,6 @@ class my_GA:
 
             objs_crossval = objs_crossval / float(len(self.data_y))  # float(len(self.data_y))
             self.evaluated[decision] = objs_crossval
-
         return self.evaluated[decision]
 
     def is_better(self, a, b):
@@ -149,7 +147,6 @@ class my_GA:
                 modified = True
         for j in to_add:
             pf_best.append(pf_new[j])
-
         return modified
 
     def select(self):
@@ -182,7 +179,6 @@ class my_GA:
                 self.generation = self.pf + next_pf
             else:
                 self.generation = self.pf[:]
-
         return
 
     def crossover(self):
@@ -198,7 +194,6 @@ class my_GA:
                     new_point.append(a[i])
                 else:
                     new_point.append(b[i])
-
             return tuple(new_point)
 
         to_add = []
@@ -210,7 +205,6 @@ class my_GA:
         ######################
         # check if size of generation is correct
         assert (len(self.generation) == self.generation_size)
-
         return self.generation
 
     def mutate(self):
@@ -230,7 +224,6 @@ class my_GA:
                     else:
                         new_x[j] = decision[np.random.randint(len(decision))]
             self.generation[i] = tuple(new_x)
-
         return self.generation
 
     def tune(self):
@@ -248,5 +241,4 @@ class my_GA:
             self.iter += 1
             self.crossover()
             self.mutate()
-
         return self.pf_best
