@@ -3,15 +3,12 @@ import pandas as pd
 import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import GaussianNB
-from sklearn import svm, metrics
+from sklearn import svm
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.metrics import roc_auc_score, classification_report
-from sklearn.model_selection import RepeatedKFold
 from sklearn.linear_model import SGDClassifier, PassiveAggressiveClassifier, LogisticRegression
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.utils import resample
 from gensim.parsing.preprocessing import STOPWORDS
 sys.path.insert(0, '..')
 from assignments.assignment8 import my_evaluation
