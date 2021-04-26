@@ -3,10 +3,11 @@ import pandas as pd
 import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import GaussianNB
-from sklearn import svm
+from sklearn import svm, metrics
+from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, classification_report
 from sklearn.model_selection import RepeatedKFold
 from sklearn.linear_model import SGDClassifier, PassiveAggressiveClassifier, LogisticRegression
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
@@ -54,9 +55,16 @@ class my_model():
     def fit(self, X, y):
 
         X = self.preprocess(X)
+
         self.preprocessor = TfidfVectorizer(stop_words='english', norm='l2', use_idf=True, smooth_idf=True, ngram_range=(1, 5))
 
         XX = self.preprocessor.fit_transform(X["description"], X["requirements"])
+
+        self.abc = AdaBoostClassifier()
+        abc_parameters = {'n_estimators': [20, 50, 75, 100, 500], 'learning_rate': [.001, .01, .1]}
+
+        self.svc = SVC()
+        svc_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4],'C': [1, 10, 100, 1000]}]
 
         self.sgd = SGDClassifier()
         sgd_parameters = {'class_weight': ["balanced", "weighted"],'penalty': ["l2", "l1"],'shuffle': [True, False],'random_state': [5, 10, 20]}
@@ -77,5 +85,6 @@ class my_model():
         X = self.preprocess(X)
         XX = self.preprocessor.transform(X["description"])
         predictions = self.rscv.predict(XX)
+
 
         return predictions
