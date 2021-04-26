@@ -59,15 +59,15 @@ class my_model():
         XX = self.preprocessor.fit_transform(X["description"], X["requirements"])
 
         self.sgd = SGDClassifier()
-        sgd_grid = {'class_weight': ["balanced", "weighted"],'penalty': ["l2", "l1"],'shuffle': [True, False],'random_state': [5, 10, 20]}
+        sgd_parameters = {'class_weight': ["balanced", "weighted"],'penalty': ["l2", "l1"],'shuffle': [True, False],'random_state': [5, 10, 20]}
 
         self.rfc = RandomForestClassifier(class_weight="balanced", random_state=5)
-        rf_grid = {"max_depth": [10, 15, 25],"criterion": ['gini', 'entropy'],"min_samples_split": [2, 3, 4, 5],"n_estimators": [10]}
+        rf_parameters = {"max_depth": [10, 15, 25],"criterion": ['gini', 'entropy'],"min_samples_split": [2, 3, 4, 5],"n_estimators": [10]}
 
         self.pac = PassiveAggressiveClassifier(class_weight="balanced")
-        pac_grid = {'random_state': [5, 10, 15, 20],'C': [0.25, 0.5, 0.75, 1],'shuffle': [True, False]}
+        pac_parameters = {'random_state': [5, 10, 15, 20],'C': [0.25, 0.5, 0.75, 1],'shuffle': [True, False]}
 
-        self.rscv = RandomizedSearchCV(self.pac, pac_grid, random_state=20, n_jobs=-1)
+        self.rscv = RandomizedSearchCV(self.pac, pac_parameters, random_state=20, n_jobs=-1)
         self.rscv.fit(XX, y)
 
         return
