@@ -18,15 +18,6 @@ from assignments.assignment8 import my_evaluation
 
 class my_model():
 
-    def removeStopWords(self, data_frame, column_name):
-
-        data_frame[column_name] = data_frame[column_name].apply(
-            lambda variable: " ".join([i for i in variable.lower().split() if i not in self.all_genism_stop_words]))
-
-    def removeSpecialChar(self, data_frame, columns):
-
-        data_frame.columns = data_frame.columns.str.replace('[!,@,#,$,%,^,&,*,\",:,;,.]', '')
-
     def preprocess(self, data_frame):
 
         data_frame['location'] = data_frame.location.fillna('None')
@@ -40,14 +31,25 @@ class my_model():
 
         for values in data_frame.columns:
             data_frame[values] = data_frame[values].str.replace(r'\W',' ').str.replace(r'\s$', '')
+
         self.all_genism_stop_words = STOPWORDS
         columnsWText = list(data_frame.columns.values)
+
         for values in columnsWText:
             self.removeStopWords(data_frame, values)
+
         for values in columnsWText:
             self.removeSpecialChar(data_frame, values)
+
         return data_frame
 
+    def removeStopWords(self, data_frame, column_name):
+
+        data_frame[column_name] = data_frame[column_name].apply(lambda variable: " ".join([i for i in variable.lower().split() if i not in self.all_genism_stop_words]))
+
+    def removeSpecialChar(self, data_frame, columns):
+
+        data_frame.columns = data_frame.columns.str.replace('[!,@,#,$,%,^,&,*,\",:,;,.]', '')
 
     def fit(self, X, y):
 
@@ -75,4 +77,5 @@ class my_model():
         X = self.preprocess(X)
         XX = self.preprocessor.transform(X["description"])
         predictions = self.rscv.predict(XX)
+
         return predictions
