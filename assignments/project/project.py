@@ -57,8 +57,8 @@ class my_model():
 
         XX = self.preprocessor.fit_transform(X["description"], X["requirements"])
 
-        self.abc = AdaBoostClassifier()
-        abc_parameters = {'n_estimators': [20, 50, 75, 100, 500], 'learning_rate': [.001, .01, .1]}
+        # self.abc = AdaBoostClassifier()
+        # abc_parameters = {'n_estimators': [20, 50, 75, 100, 500], 'learning_rate': [.001, .01, .1]}
 
         self.svc = SVC()
         svc_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4],'C': [1, 10, 100, 1000]}]
@@ -72,7 +72,9 @@ class my_model():
         self.pac = PassiveAggressiveClassifier(class_weight="balanced")
         pac_parameters = {'random_state': [5, 10, 15, 20],'C': [0.25, 0.5, 0.75, 1],'shuffle': [True, False]}
 
+        # self.rscv = GridSearchCV(self.pac, pac_parameters,refit=True, n_jobs=-1)
         self.rscv = RandomizedSearchCV(self.pac, pac_parameters, random_state=20, n_jobs=-1)
+
         self.rscv.fit(XX, y)
 
         return
